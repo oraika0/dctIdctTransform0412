@@ -6,21 +6,23 @@
 
 using namespace std;
 void getData(vector<vector<int>>& pic);
-void dct_2d(vector<vector<int>>& pic, vector<vector<int>>& picDct);
-void idct_2d(vector<vector<int>>& picDct, vector<vector<int>>& picDctIdct);
+void dct_2d(vector<vector<int>>& pic, vector<vector<double>>& picDct);
+void idct_2d(vector<vector<double>>& picDct, vector<vector<double>>& picDctIdct);
 double C(int i);
+void print(vector<vector<double>>& input);
 void print(vector<vector<int>>& input);
 
 int main()
 {
 	vector<vector<int>> pic;
-	vector<vector<int>> picDct;
-	vector<vector<int>> picDctIdct;
+	vector<vector<double>> picDct;
+	vector<vector<double>> picDctIdct;
 	getData(pic);
+	print(pic);
 	dct_2d(pic, picDct);
 	idct_2d(picDct, picDctIdct);
 	cout << "original : " << endl;
-	print(pic);
+	//print(pic);
 	cout << "after dct : " << endl;
 	print(picDct);
 	cout << "idct: " << endl;
@@ -52,45 +54,72 @@ void getData(vector<vector<int>>& pic){
 	cout << "(input complete)";
 }
 
-void dct_2d(vector<vector<int>>& pic , vector<vector<int>>& picDct) {
+void dct_2d(vector<vector<int>>& pic , vector<vector<double>>& picDct) {
 	vector<int> NVector = pic[0]; 
-	int N = pic.size(); //width
-	int M = NVector.size();//column
+	int N = NVector.size();//width
+	int M = pic.size(); //height
 	//cout << N << " " << M;
-	for (int u = 0; u < N ; u++){
-		vector<int> tempVector;
-		for (int v = 0; v < M ; v++) {
-			double sigmaCal = 0;
-			for (int sigmaI = 0; sigmaI < N ; sigmaI++){
-				for (int sigmaJ = 0; sigmaJ < M ; sigmaJ++){
+	for (int u = 0; u < M ; u++){
+		vector<double> tempVector;
+		for (int v = 0; v < N ; v++) {
+			double sigmaCalOut = 0;
+			for (int sigmaI = 0; sigmaI < M ; sigmaI++){
+				double sigmaCalIn = 0;
+				for (int sigmaJ = 0; sigmaJ < N ; sigmaJ++){
 
 
 					//cout << endl << sigmaJ << " ";
 					//cout << pic[sigmaI][sigmaJ] << endl;
-					sigmaCal += pic[sigmaI][sigmaJ] * cos(((2 * sigmaI + 1) * u * pi) / (2 * M)) * cos(((2 * sigmaJ + 1) * v * pi) / (2 * N));
-
+					sigmaCalIn += pic[sigmaI][sigmaJ] * cos(((2 * sigmaI + 1) * u * pi) / (2 * N)) * cos(((2 * sigmaJ + 1) * v * pi) / (2 * M));
 				}
+				sigmaCalOut += sigmaCalIn;
 			}
-			tempVector.push_back((2 * C(u) * C(v)) / (sqrt(M * N)) * sigmaCal);
+			tempVector.push_back((2 * C(u) * C(v)) / (sqrt(M * N)) * sigmaCalOut);
 		}
 		picDct.push_back(tempVector);
 	}
 }
 
-void idct_2d(vector<vector<int>>& picDct, vector<vector<int>>& picDctIdct) {
-	vector<int> NVector = picDct[0];
-	int N = picDct.size(); //width
-	int M = NVector.size();//column
-	for (int I = 0; I < N; I++) {
-		vector<int> tempVector;
-		for (int J = 0; J < M; J++) {
-			double sigmaCal = 0;
-			for (int sigmaU = 0; sigmaU < N; sigmaU++) {
-				for (int sigmaV = 0; sigmaV < M; sigmaV++) {
-					sigmaCal += (2 * C(sigmaU) * C(sigmaV)) / (sqrt(M * N)) * picDct[sigmaU][sigmaV] * cos(((2 * sigmaU + 1) * I * pi) / (2 * M)) * cos(((2 * sigmaV + 1) * J * pi) / (2 * N));
+void idct_2d(vector<vector<double>>& picDct, vector<vector<double>>& picDctIdct) {
+	//vector<double> NVector = picDct[0];
+	//int N = NVector.size();//width
+	//int M = picDct.size(); //height
+	//for (int I = 0; I < M; I++) {
+	//	vector<double> tempVector;
+	//	for (int J = 0; J < N; J++) {
+	//		double sigmaCalOut = 0;
+	//		for (int sigmaU = 0; sigmaU < M; sigmaU++) {
+	//			double sigmaCalIn = 0;
+	//			for (int sigmaV = 0; sigmaV < N ; sigmaV++) {
+	//				sigmaCalIn += (2 * C(sigmaU) * C(sigmaV)) / (sqrt(M * N)) * picDct[sigmaU][sigmaV] * cos(((2 * sigmaU + 1) * I * pi) / (2 * N)) * cos(((2 * sigmaV + 1) * J * pi) / (2 * M));
+	//			}
+	//			sigmaCalOut += sigmaCalIn;
+	//		}
+	//		tempVector.push_back(sigmaCalOut);
+	//	}
+	//	picDctIdct.push_back(tempVector);
+	//}
+
+	vector<double> NVector = picDct[0];
+	int N = NVector.size();//width
+	int M = picDct.size(); //height
+	//cout << N << " " << M;
+	for (int u = 0; u < M; u++) {
+		vector<double> tempVector;
+		for (int v = 0; v < N; v++) {
+			double sigmaCalOut = 0;
+			for (int sigmaI = 0; sigmaI < M; sigmaI++) {
+				double sigmaCalIn = 0;
+				for (int sigmaJ = 0; sigmaJ < N; sigmaJ++) {
+
+
+					//cout << endl << sigmaJ << " ";
+					//cout << pic[sigmaI][sigmaJ] << endl;
+					sigmaCalIn += (((2 * C(sigmaI) * C(sigmaJ)) / (sqrt(M * N))) * picDct[sigmaI][sigmaJ] * cos(((2 * sigmaI + 1) * u * pi) / (2 * N)) * cos(((2 * sigmaJ + 1) * v * pi) / (2 * M)));
 				}
+				sigmaCalOut += sigmaCalIn;
 			}
-			tempVector.push_back(sigmaCal);
+			tempVector.push_back( sigmaCalOut);
 		}
 		picDctIdct.push_back(tempVector);
 	}
@@ -107,13 +136,25 @@ double C(int i) {
 	}
 }
 
-void print(vector<vector<int>>& input) {
+void print(vector<vector<double>>& input) {
 	for (int i = 0; i < input.size() ; i++)
+	{
+		vector<double> tempVector;
+		tempVector = input[i];
+		for (int j = 0; j < input[0].size(); j++) {
+			cout << tempVector[j] << " " ;
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+void print(vector<vector<int>>& input) {
+	for (int i = 0; i < input.size(); i++)
 	{
 		vector<int> tempVector;
 		tempVector = input[i];
 		for (int j = 0; j < input[0].size(); j++) {
-			cout << tempVector[j];
+			cout << tempVector[j] << " ";
 		}
 		cout << endl;
 	}
