@@ -62,6 +62,10 @@ double C(int i) {
 	{
 		return 1 / sqrt(2);
 	}
+	else
+	{
+		return 1;
+	}
 }
 
 
