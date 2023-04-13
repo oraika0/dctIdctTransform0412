@@ -115,7 +115,7 @@ void idct_2d(vector<vector<double>>& picDct, vector<vector<double>>& picDctIdct)
 
 					//cout << endl << sigmaJ << " ";
 					//cout << pic[sigmaI][sigmaJ] << endl;
-					sigmaCalIn += (((2 * C(sigmaI) * C(sigmaJ)) / (sqrt(M * N))) * picDct[sigmaI][sigmaJ] * cos(((2 * sigmaI + 1) * u * pi) / (2 * N)) * cos(((2 * sigmaJ + 1) * v * pi) / (2 * M)));
+					sigmaCalIn += (((2 * C(sigmaI) * C(sigmaJ)) / (sqrt(M * N))) * picDct[sigmaI][sigmaJ] * cos(((2 * u + 1) * sigmaJ * pi) / (2 * N)) * cos(((2 * v + 1) * sigmaI * pi) / (2 * M)));
 				}
 				sigmaCalOut += sigmaCalIn;
 			}
